@@ -1,0 +1,21 @@
+### IMAGE GENERATOR LLM RULE
+
+
+####  Fixed Character & Art Style Invariance
+
+- **Main Character: Little Blue kitty
+** The little blue kitty(cat) must appear exactly!! as in the original image:
+  - Fur color: vivid, !!blue!!, blue!!, fur should be blue!!  
+  - Face: large round black‑and‑white eyes, tiny whiskers around the mouth in right and left  
+  - Body proportions, ear shape, tail curl: must not change  
+- **Art Style:** Always “soft, whimsical, hand‑painted children’s illustration”  
+  - Keep gentle watercolor brushstrokes and pastel palette  
+  - No photorealism, harsh digital rendering, dark tones, or extreme contrast/saturation  
+
+
+
+**Image Prompt (single-sentence):**
+{IMAGE_PROMPT}
+
+**Story**
+{STORY}
