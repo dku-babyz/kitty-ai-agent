@@ -1,0 +1,22 @@
+```json
+{
+  "evaluation": {
+    "story_prompt_score": 4,
+    "image_prompt_score": 3,
+    "reasoning": {
+      "story_prompt": {
+        "story_directiveness": "이야기의 주제와 구조는 명확하나, 사건 전개와 결말에 대한 구체적인 지침이 부족하여 연속성이 약합니다.",
+        "character_guidance": "주인공인 키티의 행동과 역할이 명확하게 반영되어 있어 캐릭터 중심의 이야기를 잘 유도합니다.",
+        "tone_consistency": "어린이 콘텐츠로서 적절한 톤과 스타일을 유지하고 있습니다.",
+        "creativity_potential": "이야기의 전개가 다소 평이하여, 흥미를 끌 수 있는 갈등 요소나 반전이 부족합니다."
+      },
+      "image_prompt": {
+        "visual_clarity": "이미지 프롬프트가 구체적인 장면을 묘사하지 않아 시각적 구현에 어려움이 있습니다.",
+        "style_alignment": "스타일 가이드는 잘 반영되어 있으나, 세부적인 시각적 요소가 부족합니다.",
+        "text_visual_alignment": "스토리와 이미지 간의 감정적 연결이 약하여, 이야기를 충분히 보완하지 못하고 있습니다."
+      }
+    }
+  },
+  "revisions": {
+    "revised_story_prompt": "이 콘텐츠는 하루에 하나 생성되는 어린이용 이야기이며, 짧은 동화 또는 일기처럼 구성되어야 합니다.\n\n1. 이야기의 주제는 “오늘 하루의 특정 경험이나 인상적인 장면”에서 출발합니다.  \n   - 예: 친구와 놀던 순간, 길을 잃었다가 다시 만난 경험, 가족과 함께한 특별한 날\n\n2. 구조는 다음과 같은 순서를 따릅니다:\n   - (1) 상황 제시: 장소, 시간, 등장인물 소개\n   - (2) 감정 표현: 주인공이 어떤 감정을 느꼈는지 구체적으로 묘사\n   - (3) 사건 전개: 갈등이나 특별한 상황이 있었는가?\n   - (4) 마무리: 오늘의 교훈이나 느낀 점으로 정리\n\n3. 문체는 다음과 같은 기준을 따릅니다:\n   - 문장은 짧고 단순해야 하며, 1문장 1개념 원칙을 지킵니다.\n   - 추상적이거나 무거운 단어보다는 구체적이고 밝은 어휘를 사용합니다.\n   - 폭력, 죽음, 공포, 불안, 혐오 등의 표현은 절대 사용하지 않습니다.\n   - 의도적인 감정 강요(“반드시 기뻐해야 해”)는 피하고, 자연스럽게 느끼게 만듭니다.\n\n4. 전체 글의 분위기는 **오늘 하루를 차분히 회고하는 일기**처럼 구성되어야 하며,  \n   마지막에는 ‘그래서 나는 이렇게 느꼈다’는 식의 교훈 또는 정리 문장으로 마무리하세요.",
+    "revised_image_prompt": "This prompt is for generating one single image that complements a short daily story.  \nThe image must follow the mood and simplicity appropriate for children.\n\n1. Structure of the prompt:\n   - (1) Define the time of day and weather: “a sunny afternoon”, “a cloudy morning”\n   - (2) Set a recognizable location: “a playground”, “a classroom”, “a quiet forest”\n   - (3) Add 1–2 main visual elements (subject + action): “a child hugging a cat”, “a rabbit sitting under a tree”\n   - (4) Optional background activity or atmosphere: “soft sunlight through leaves”, “toys scattered in the background”\n\n2. Style guidelines:\n   - Language must be simple, clear, and visual-first.\n   - Avoid complex emotions or metaphorical phrases.\n   - Use gentle adjectives: soft, warm, peaceful, friendly, bright.\n   - Avoid: dark, scary, surreal, chaotic, hyper-realistic.\n\n3. Framing:\n   - The image should feel like a snapshot from the story – a single moment in time.\n   - Focus on 1 main scene or emotion, not multiple story beats.\n   - Keep the scene open and friendly for interpretation by a child.\n\n4. Format recommendations:\n   - Use commas to separate scene elements clearly.\n   - Avoid chaining too

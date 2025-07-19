@@ -1,11 +1,13 @@
-# image_critic_llm.py
+# agents/image_critic_llm.py
 import openai
 import os
 import json
+import re
 from PIL import Image
 import torch
 import clip
 from torchvision import transforms
+
 
 class ImageCriticLLM:
     def __init__(
@@ -28,6 +30,13 @@ class ImageCriticLLM:
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
 
+    def _strip_json_block(self, text):
+        if text.startswith("```json"):
+            return re.sub(r"^```json\s*|\s*```$", "", text.strip(), flags=re.DOTALL)
+        elif text.startswith("```"):
+            return re.sub(r"^```\s*|\s*```$", "", text.strip(), flags=re.DOTALL)
+        return text
+
     def compute_clip_score(self, image_path, long_text):
         def safe_token_length(text):
             try:
@@ -36,13 +45,11 @@ class ImageCriticLLM:
                 return 999
 
         model, preprocess = clip.load("ViT-B/32", device="cpu")
-        image = preprocess(Image.open(image_path)).unsqueeze(0)
-        image = image.to("cpu")
+        image = preprocess(Image.open(image_path)).unsqueeze(0).to("cpu")
 
         max_tokens = 77
         sentences = long_text.strip().split(". ")
-        chunks = []
-        current_chunk = ""
+        chunks, current_chunk = [], ""
 
         for sentence in sentences:
             candidate = current_chunk + sentence + ". "
@@ -68,7 +75,7 @@ class ImageCriticLLM:
                 scores.append(similarity)
 
         raw_score = sum(scores) / len(scores)
-        adjusted_score = min(round(raw_score * 1.1, 4), 1.0)  # 10% 업스케일
+        adjusted_score = min(round(raw_score * 1.7, 4), 1.0)  # 70% boost
         return adjusted_score
 
     def build_prompt(self, clip_score):
@@ -96,20 +103,35 @@ class ImageCriticLLM:
         )
 
         result = response.choices[0].message.content.strip()
+        cleaned = self._strip_json_block(result)
 
         try:
-            if result.startswith("```json"):
-                result = result.lstrip("```json").rstrip("```").strip()
-            elif result.startswith("```"):
-                result = result.lstrip("```").rstrip("```").strip()
-
-            return json.loads(result)
+            return json.loads(cleaned)
         except json.JSONDecodeError:
             return {"error": "Invalid JSON", "raw": result}
 
+
+# ✅ 외부 호출용 call 함수
+def call(
+    model="gpt-4o",
+    rule_path="rules/image_critic_rule.txt",
+    prompt_template_path="prompts/image_critic_prompt.txt",
+    image_path="memory/generated_image.png",
+    story_path="memory/present_story.txt"
+):
+    critic = ImageCriticLLM(
+        model=model,
+        rule_path=rule_path,
+        prompt_template_path=prompt_template_path,
+        image_path=image_path,
+        story_path=story_path
+    )
+    return critic.generate()
+
+
+# 🧪 단독 실행
 if __name__ == "__main__":
     print("🖼️ Image Critic LLM 실행 중...")
-    critic = ImageCriticLLM()
-    result = critic.generate()
+    result = call()
     print("\n📤 평가 결과:")
     print(json.dumps(result, indent=2, ensure_ascii=False))

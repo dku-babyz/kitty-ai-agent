@@ -1,4 +1,4 @@
-# image_llm.py
+# agents/image_llm.py
 import os
 import requests
 
@@ -57,7 +57,8 @@ class ImageLLM:
                 "style_preset": self.style,
                 "output_format": "png",
                 "seed": self.seed
-            }
+            },
+            timeout=120
         )
 
         if response.status_code == 200:
@@ -65,12 +66,36 @@ class ImageLLM:
                 f.write(response.content)
             print(f"✅ 이미지 생성 완료: {self.output_path}")
         else:
-            print(f"❌ 오류 발생: {response.status_code}")
+            print(f"❌ Stability API 오류 발생: {response.status_code}")
             try:
                 print(response.json())
-            except:
+            except Exception:
                 print(response.text)
+            raise RuntimeError("Stable Diffusion 이미지 생성 실패")
 
-if __name__ == "__main__":
-    generator = ImageLLM()
+
+# ✅ 외부에서 호출 가능한 함수
+def call(
+    rule_path="rules/image_rule.txt",
+    prompt_template_path="prompts/image_prompt.txt",
+    story_path="memory/present_story.txt",
+    image_prompt_path="prompts/image_prompt.txt",
+    output_path="memory/generated_image.png",
+    style="fantasy-art",
+    seed=123456
+):
+    generator = ImageLLM(
+        rule_path=rule_path,
+        prompt_template_path=prompt_template_path,
+        story_path=story_path,
+        image_prompt_path=image_prompt_path,
+        output_path=output_path,
+        style=style,
+        seed=seed
+    )
     generator.generate()
+
+
+# 🧪 단독 실행
+if __name__ == "__main__":
+    call()

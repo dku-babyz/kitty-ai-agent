@@ -1,7 +1,8 @@
-# story_critic_llm.py
+# agents/story_critic_llm.py
 import openai
 import os
 import json
+import re
 
 class StoryCriticLLM:
     def __init__(
@@ -33,6 +34,14 @@ class StoryCriticLLM:
             .replace("{STORY_PROMPT}", self.story_prompt.strip())
         return f"{self.rule}\n\n### INPUT\n{filled_prompt}"
 
+    def _strip_json_block(self, text):
+        """```json 또는 ```로 감싸진 경우 JSON만 추출"""
+        if text.startswith("```json"):
+            return re.sub(r"^```json\s*|\s*```$", "", text.strip(), flags=re.DOTALL)
+        elif text.startswith("```"):
+            return re.sub(r"^```\s*|\s*```$", "", text.strip(), flags=re.DOTALL)
+        return text
+
     def generate(self):
         full_prompt = self.build_prompt()
 
@@ -57,16 +66,35 @@ class StoryCriticLLM:
         )
 
         content = response.choices[0].message.content.strip()
+        content_cleaned = self._strip_json_block(content)
 
         try:
-            return json.loads(content)
+            return json.loads(content_cleaned)
         except json.JSONDecodeError:
             return {"error": "Invalid JSON format", "raw": content}
 
+# ✅ 외부 호출용
+def call(
+    model="gpt-4o",
+    rule_path="rules/story_critic_rule.txt",
+    prompt_template_path="prompts/story_critic_prompt.txt",
+    story_prompt_path="prompts/story_prompt.txt",
+    previous_story_path="memory/previous_story.txt",
+    present_story_path="memory/present_story.txt"
+):
+    critic = StoryCriticLLM(
+        model=model,
+        rule_path=rule_path,
+        prompt_template_path=prompt_template_path,
+        story_prompt_path=story_prompt_path,
+        previous_story_path=previous_story_path,
+        present_story_path=present_story_path
+    )
+    return critic.generate()
+
+# 🧪 단독 실행 시
 if __name__ == "__main__":
     print("🧠 Story Critic LLM 실행 중...")
-    critic = StoryCriticLLM()
-    result = critic.generate()
-
+    result = call()
     print("\n📤 평가 결과 (JSON):")
     print(json.dumps(result, indent=2, ensure_ascii=False))
