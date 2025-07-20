@@ -2,10 +2,6 @@
 총 6회의 피드백 루프 결과를 참고하여 아래 항목에 대해 정량적(점수) 및 정성적(reasoning) 평가를 수행하고,  
 개선된 수정안(`revision`)을 제시하십시오.
 
-
-### 중요 ####
-revised_image_prompt는 반드시!!! 영어로 작성이 되야함.!!!
-
 ---
 
 **Story Prompt**:
@@ -95,7 +91,7 @@ revised_image_prompt는 반드시!!! 영어로 작성이 되야함.!!!
   },
   "revisions": {
     "revised_story_prompt": "스토리 프롬프트",
-    "revised_image_prompt": "image_prompt"
+    "revised_image_prompt": "이미지 프롬프트"
   },
   "final_comment": "프롬프트는 전반적으로 잘 구성되었으나, 구체성과 창의성 유도력을 강화하면 더 좋은 생성 결과로 이어질 수 있습니다."
 }

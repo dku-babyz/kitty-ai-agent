@@ -1,0 +1,13 @@
+{
+  "tone_label": "NEUTRAL",
+  "prompt_for_story_creator": {
+    "how_to_generate": 0,
+    "Revision": "",
+    "story_direction": "NEUTRAL (일상적이고 중립적인 시나리오)"
+  },
+  "prompt_for_image_creator": {
+    "how_to_generate": 0,
+    "Revision": "",
+    "story_direction": "NEUTRAL (Everyday and Neutral Scenario)"
+  }
+}
