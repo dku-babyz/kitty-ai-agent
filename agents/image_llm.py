@@ -3,15 +3,17 @@ import os
 import requests
 
 class ImageLLM:
-    def __init__(self,
-                 rule_path="rules/image_rule.txt",
-                 prompt_template_path="prompts/image_prompt.txt",
-                 story_path="memory/present_story.txt",
-                 image_prompt_path="prompts/image_prompt.txt",
-                 output_path="memory/generated_image.png",
-                 style="fantasy-art",
-                 seed=123456):
-
+    def __init__(
+        self,
+        rule_path="rules/image_rule.txt",
+        prompt_template_path="prompts/image_prompt.txt",
+        story_path="memory/present_story.txt",
+        image_prompt_path="prompts/image_prompt.txt",
+        feedback_path="memory/image_feedback.txt",
+        output_path="memory/generated_image.png",
+        style="fantasy-art",
+        seed=123456
+    ):
         self.api_key = os.getenv("STABILITY_API_KEY")
         assert self.api_key, "❌ STABILITY_API_KEY 환경변수가 설정되지 않았습니다."
 
@@ -19,6 +21,7 @@ class ImageLLM:
         self.prompt_template = self._load_file(prompt_template_path)
         self.story = self._load_file(story_path)
         self.image_prompt = self._load_file(image_prompt_path)
+        self.feedback = self._load_file(feedback_path)
         self.output_path = output_path
         self.style = style
         self.seed = seed
@@ -36,7 +39,8 @@ class ImageLLM:
     def build_prompt(self):
         prompt_text = self.rule \
             .replace("{IMAGE_PROMPT}", self.image_prompt.strip()) \
-            .replace("{STORY}", self.story.strip())
+            .replace("{STORY}", self.story.strip()) \
+            .replace("{FEEDBACK}", self.feedback.strip())
         return prompt_text.strip()
 
     def generate(self):
@@ -80,6 +84,7 @@ def call(
     prompt_template_path="prompts/image_prompt.txt",
     story_path="memory/present_story.txt",
     image_prompt_path="prompts/image_prompt.txt",
+    feedback_path="memory/image_feedback.txt",
     output_path="memory/generated_image.png",
     style="fantasy-art",
     seed=123456
@@ -89,6 +94,7 @@ def call(
         prompt_template_path=prompt_template_path,
         story_path=story_path,
         image_prompt_path=image_prompt_path,
+        feedback_path=feedback_path,
         output_path=output_path,
         style=style,
         seed=seed

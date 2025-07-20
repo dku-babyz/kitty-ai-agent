@@ -1,4 +1,4 @@
-# agents/story_llm.py
+# prompt_critic_llm.py
 import openai
 import os
 import json
@@ -10,16 +10,22 @@ class StoryLLM:
         model="gpt-4o",
         rule_path="rules/story_rule.txt",
         prompt_path="prompts/story_prompt.txt",
-        past_story_path="memory/previous_story.txt"
+        past_story_path="memory/previous_story.txt",
+        direction_path="prompts/story_direction.txt",
+        feedback_path="memory/story_feedback.txt"
     ):
         self.model = model
         self.rule_path = rule_path
         self.prompt_path = prompt_path
         self.past_story_path = past_story_path
+        self.direction_path = direction_path
+        self.feedback_path = feedback_path
 
         self.rule_template = self._load_file(rule_path)
         self.prompt = self._load_file(prompt_path)
         self.past_story = self._load_file(past_story_path)
+        self.direction = self._load_file(direction_path)
+        self.feedback = self._load_file(feedback_path)
 
     def _load_file(self, path):
         if not os.path.exists(path):
@@ -30,7 +36,9 @@ class StoryLLM:
     def build_prompt(self):
         return self.rule_template \
             .replace("{PROMPT}", self.prompt.strip()) \
-            .replace("{PAST_STORY}", self.past_story.strip())
+            .replace("{PAST_STORY}", self.past_story.strip()) \
+            .replace("{STORY_DIRECTION}", self.direction.strip()) \
+            .replace("{STORY_FEEDBACK}", self.feedback.strip())
 
     def _strip_json_block(self, text):
         """ ```json ~ ``` 감싸진 부분이 있다면 제거하고 JSON만 추출 """
@@ -77,13 +85,17 @@ def call(
     model="gpt-4o",
     rule_path="rules/story_rule.txt",
     prompt_path="prompts/story_prompt.txt",
-    past_story_path="memory/previous_story.txt"
+    past_story_path="memory/previous_story.txt",
+    direction_path="prompts/story_direction.txt",
+    feedback_path="memory/story_feedback.txt"
 ):
     llm = StoryLLM(
         model=model,
         rule_path=rule_path,
         prompt_path=prompt_path,
-        past_story_path=past_story_path
+        past_story_path=past_story_path,
+        direction_path=direction_path,
+        feedback_path=feedback_path
     )
     return llm.generate()
 

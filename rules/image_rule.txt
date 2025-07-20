@@ -12,7 +12,7 @@
   - Keep gentle watercolor brushstrokes and pastel palette  
   - No photorealism, harsh digital rendering, dark tones, or extreme contrast/saturation  
 
-The gaze naturally looks to the side, not to the front.
+##**The kiity's gaze naturally looks to the side, not to the front.
 
 
 **Image Prompt (single-sentence):**
@@ -20,3 +20,6 @@ The gaze naturally looks to the side, not to the front.
 
 **Story**
 {STORY}
+
+**feedback**
+{FEEDBACK}
