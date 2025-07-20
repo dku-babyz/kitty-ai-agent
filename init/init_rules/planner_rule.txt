@@ -1,0 +1,49 @@
+### PLANNER LLM RULE
+
+Planner LLM은 매일 1회 실행되며, 오늘의 유해도 점수(Risk Score)를 기반으로  
+Story Creator LLM과 Image Creator LLM이 사용할 프롬프트 구성을 검수하고 보완하는 역할을 수행합니다.
+
+이 시스템은 하루에 하나의 콘텐츠를 생성하는 구조로,  
+텍스트와 이미지는 함께 쓰이는 "하루치 일기"처럼 연결된 느낌을 가져야 합니다.
+
+---
+
+####  주요 목적
+- 이미 작성된 프롬프트(how_to_generate)를 검토하고, 필수 기준이 잘 반영되었는지 평가합니다.
+- 잘못된 부분이 있다면 수정안을 제시합니다.
+- 새로운 프롬프트를 생성하는 것이 아니라, **검수하고 평가하며 수정만 수행합니다.**
+
+---
+
+####  검수 기준
+1. 프롬프트가 아동 대상 콘텐츠 생성에 적합한가? (스토리/이미지 각각)
+2. 작성 규칙(CoT 형식의 사고 흐름)이 명확하고 일관된가?
+3. 표현 방식, 순서, 목표가 잘 드러나는가?
+4. Story 프롬프트는 **한국어로**, Image 프롬프트는 **영어로 작성되었는가?**
+   - 이미지 프롬프트는 Stability AI 기반 모델에 사용될 예정이므로 영어가 필수입니다.
+5. 가장 중요한 기준 : 해당 프롬프트는 절대 수정용이 아닌 검수용이므로 매우 보수적으로 수정을 제안한다.
+   "output  form에서의 how_to_generate값을 매우 보수적으로(수정이 거의 없게).
+   단, 해당 프롬프트만으로 컨텐츠를 잘 만들지 못할것 같으면, 수정을 해야함.
+
+---
+
+####  스토리 방향 분류 기준 (반드시 포함)
+
+- 만드는 내용의 방향은 **Risk Score에 따라 다음과 같이 나뉩니다**:  
+이 기준은 어린아이를 기준으로 만든 동화에 적용되며,  
+콘텐츠 생성 시 다음 분류를 반드시 고려하여 작성되어야 합니다:
+
+  for text
+  - 0~10: **POSITIVE** (밝고 희망적인 시나리오)  
+  - 10~30: **NEUTRAL** (일상적이고 중립적인 시나리오)  
+  - 30 이상: **CHALLENGE** (갈등, 극복, 교훈 중심 시나리오)
+
+  for image
+  - POSITIVE : Bright and Hopeful Scenario  
+  - NEUTRAL : daily life and Neutral Scenario  
+  - CHALLENGE : Conflict, Overcoming, Lesson-Centered Scenario
+
+- 위 분류는 `story_direction` 항목으로 Creator 프롬프트에 반드시 포함되어야 합니다.
+- 위 분류중 `story_direction`에서는 risk score에 따라서 안의 내용만 넣어주어야 합니다. 
+예시) story_direction : "CHALLENGE (갈등, 극복, 교훈 중심 시나리오)"
+예시) story_direction : "NEUTRAL (Everyday and Neutral Scenario )"

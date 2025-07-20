@@ -1,0 +1,77 @@
+### SYSTEM
+{RULE}
+
+### CONTEXT
+오늘의 콘텐츠 유해도 점수는 {risk_score}입니다.  
+→ 오늘의 스토리 방향성은 **{tone_label}** 유형에 해당합니다.
+
+Story Creator LLM과 Image Creator LLM에 전달할 프롬프트를 검수하고,  
+필요시 수정된 프롬프트를 작성하여 아래 형식으로 정리해주세요.
+
+이 프롬프트는 하루에 하나의 콘텐츠(이미지+텍스트)를 생성하기 위한 것으로,  
+각 요소는 서로 연결된 일기 형식처럼 작동해야 하며 독립된 이야기처럼 보이면 안 됩니다.
+
+
+**Story Creator Prompt**
+{story_prompt}
+
+
+**Image Creator Prompt**
+{image_prompt}
+
+
+---
+
+### TASK
+
+각 Creator LLM에 대해 다음 항목을 점검하고 보완합니다:
+
+####  항목 1: how_to_generate  
+- 이미 작성된 프롬프트의 사고 흐름(CoT)이 논리적이고 아동 콘텐츠 기준에 맞는지 평가하세요.  
+- 콘텐츠를 어떤 절차로 설계할지에 대한 **구체적 사고 순서와 규칙**에 대한 내용이 명확한지 확인하세요.
+- 실제로 해당 프롬프트를 사용하여, 컨텐츠를 생성할때, 
+- 검수 점수를 how_to_generate 값에 표기 : 
+        - 0 : 검수 결과 무
+        - 1 : 검수 결과 유 (이유에 대해서 자세하게 검수 반려 이유를 써야함.)
+        - 2 : 검수 결과 매우 위험(초기 프롬프트로 되돌려야함 : 프롬프트의 내용이 없거나, 컨텐츠 생성을 위한 프롬프트가 아닌경우 : 보수적으로 판단)
+- 검수 점수가 표기가 되었다면, 이에대한  괄호를 쳐서 반드시 설명한다.
+- 예시) 예시는 
+  how_to_generate : 1(구체적 사고가 부족함) 
+    
+####  항목 2: Revision
+- 이미 작성된 프롬프트에서 검수결과가 0이 아니라면 이에 맞게 약간의 수정을 하게 해준다.
+- how_to_generate값이 0이면 빈칸으로 둔다.
+- 수정된 프롬프트를 Revision 에 써준다.
+- revision : "대체된 프롬프트"
+- 해당 부분은 반드시 모든 프롬프트의 내용을 ***이전 프롬프트보다 더 많이또는 비슷하게*** 이상으로 써줘야 함.
+- 내용이 풍부해야 함.
+
+
+
+
+####  항목 3: story_direction  
+- 아래의 “스토리 방향 분류 기준” 텍스트를 **그대로 복사하여 포함**하세요.  
+- 절대 수정하거나 해석하지 말고 원문 그대로 넣어야 합니다.
+
+####  언어 조건
+- `how_to_generate.story`: **한국어**  
+- `how_to_generate.image`: **영어**
+
+---
+
+### OUTPUT FORMAT (예시)
+
+```json
+{
+  "tone_label": "CHALLENGE",
+  "prompt_for_story_creator": {
+    "how_to_generate": (위에 설명 되어 있음) ,
+    "Revision" : (위에 설명 되어 있음) ,
+    "story_direction": "CHALLENGE (갈등, 극복, 교훈 중심 시나리오)"
+  },
+  "prompt_for_image_creator": {
+    "how_to_generate": (위에 설명 되어 있음) ,
+    "Revision" : (위에 설명 되어 있음) ,
+    "story_direction": "(Conflict, Overcoming, Lesson-Centered Scenario)"
+  }
+}

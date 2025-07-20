@@ -11,20 +11,23 @@ class PromptCriticLLM:
         rule_path="rules/prompt_critic_rule.txt",
         story_prompt_path="prompts/story_prompt.txt",
         image_prompt_path="prompts/image_prompt.txt",
-        feedback_path="memory/sample_feedback.txt",
+        story_feedback_path="memory/story_feedback.txt",
+        image_feedback_path="memory/image_feedback.txt",
         output_path="results/revised_story_prompt.txt"
     ):
         self.model = model
         self.rule_path = rule_path
         self.story_prompt_path = story_prompt_path
         self.image_prompt_path = image_prompt_path
-        self.feedback_path = feedback_path
+        self.story_feedback_path = story_feedback_path
+        self.image_feedback_path = image_feedback_path
         self.output_path = output_path
 
         self.rule = self._load_file(rule_path)
         self.story_prompt = self._load_file(story_prompt_path)
         self.image_prompt = self._load_file(image_prompt_path)
-        self.feedback = self._load_file(feedback_path)
+        self.story_feedback = self._load_file(story_feedback_path)
+        self.image_feedback = self._load_file(image_feedback_path)
 
     def _load_file(self, path):
         if not os.path.exists(path):
@@ -32,18 +35,16 @@ class PromptCriticLLM:
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
 
-    def _strip_json_block(self, text):
-        if text.startswith("```json"):
-            return re.sub(r"^```json\s*|\s*```$", "", text.strip(), flags=re.DOTALL)
-        elif text.startswith("```"):
-            return re.sub(r"^```\s*|\s*```$", "", text.strip(), flags=re.DOTALL)
-        return text
+    def _extract_json_from_text(self, text):
+        match = re.search(r"\{(?:.|\n)*\}", text)
+        return match.group(0) if match else text
 
     def build_prompt(self):
         return self.rule \
             .replace("{STORY_PROMPT}", self.story_prompt.strip()) \
             .replace("{IMAGE_PROMPT}", self.image_prompt.strip()) \
-            .replace("{FEEDBACK}", self.feedback.strip())
+            .replace("{STORY_FEEDBACK}", self.story_feedback.strip()) \
+            .replace("{IMAGE_FEEDBACK}", self.image_feedback.strip())
 
     def generate(self):
         full_prompt = self.build_prompt()
@@ -54,15 +55,15 @@ class PromptCriticLLM:
         response = client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": "너는 프롬프트 평가자이자 편집자야. RULE을 따르고, markdown 형식으로 평가와 리비전을 반환해."},
+                {"role": "system", "content": "너는 프롬프트 평가자이자 편집자야. RULE을 따르고, JSON 형식으로 평가와 리비전을 반환해."},
                 {"role": "user", "content": full_prompt}
             ],
             temperature=0.5,
-            max_tokens=1000
+            max_tokens=1200
         )
 
         content = response.choices[0].message.content.strip()
-        content_cleaned = self._strip_json_block(content)
+        content_cleaned = self._extract_json_from_text(content)
 
         try:
             result = json.loads(content_cleaned)
@@ -82,7 +83,8 @@ def call(
     rule_path="rules/prompt_critic_rule.txt",
     story_prompt_path="prompts/story_prompt.txt",
     image_prompt_path="prompts/image_prompt.txt",
-    feedback_path="memory/sample_feedback.txt",
+    story_feedback_path="memory/story_feedback.txt",
+    image_feedback_path="memory/image_feedback.txt",
     output_path="results/revised_story_prompt.txt"
 ):
     critic = PromptCriticLLM(
@@ -90,7 +92,8 @@ def call(
         rule_path=rule_path,
         story_prompt_path=story_prompt_path,
         image_prompt_path=image_prompt_path,
-        feedback_path=feedback_path,
+        story_feedback_path=story_feedback_path,
+        image_feedback_path=image_feedback_path,
         output_path=output_path
     )
     return critic.generate()
