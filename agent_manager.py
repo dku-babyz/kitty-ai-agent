@@ -218,10 +218,10 @@ class AgentManager:
 
         # 파일 리셋/이동 처리
         shutil.copy(self.present_story_path_en, self.previous_story_path)
-        os.remove(self.story_direction_path)
-        os.remove(self.story_feedback_path)
-        os.remove(self.image_feedback_path)
-        os.remove(self.present_story_path_en)
+        self._save_file(self.story_direction_path, "")
+        self._save_file(self.story_feedback_path, "")
+        self._save_file(self.image_feedback_path, "")
+        self._save_file(self.present_story_path_en, "")
         os.rename("memory/generated_image.png", f"memory/image_{cycle}.png")
         print(f"🧾 Memory 저장 완료 (cycle {cycle})")
 
